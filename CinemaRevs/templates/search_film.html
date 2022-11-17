@@ -1,0 +1,30 @@
+{% extends 'index.html' %}
+
+{% load static %}
+
+{% block codigoDinamico %}
+<form style="margin-top: 80px;" action="" method="get">
+
+    <input type="text" name="titulo" id="titulo">
+
+    <input type="submit" value="search">
+
+</form>
+
+{% if found %}
+
+<ul>
+    {% for i in found %}
+    <li>Titulo: {{ i.titulo }}</li>            
+    <li>Año: {{ i.año }}</li>
+    <li>Genero: {{ i.genero }}</li>
+    <li>Duracion: {{ i.duracion }} min</li>
+    <li>Sinopsis: {{ i.sinopsis }}</li>
+    {% endfor %}
+</ul>
+
+{% else %}
+    <p>No results</p>
+{% endif %}
+
+{% endblock  %}

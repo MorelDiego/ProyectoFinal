@@ -1,0 +1,19 @@
+{% extends 'index.html' %}
+
+{% load static %}
+
+{% block codigoDinamico %}
+
+<form class="ms-3" style="margin-top: 80px;" action="" method="post"> {% csrf_token %}
+
+    <h3>Add New Film</h3>
+
+    <table>
+        {{addfilm.as_table}}
+    </table>
+
+    <button class="btn btn-primary" type="submit" value="Enviar">Submit</button>
+
+</form> 
+
+{% endblock  %}
