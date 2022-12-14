@@ -16,11 +16,27 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from CinemaRevs import views
+from django.conf import settings
+from django.conf.urls.static import static
+
 
 urlpatterns = [
     path('', views.index, name='Index'),
-    path('contacto/', views.contacto_consulta, name='Contacto'),
-    path('catalog/', views.catalog, name='Catalog'),
-    path('search_film/', views.search_film, name='Search'),
-    path('addfilm/', views.add_film, name='NewFilm'),
+    path('contacto/', views.contact, name='Contact'),
+    path('about/', views.about, name='About'),
+    path('reviews/', views.reviews, name='Reviews'),
+    path('search/', views.search, name='Search'),
+    path('editprofile/', views.editProfile, name='EditProfile'),
+    path('reviews_list/', views.ReviewsListView.as_view(), name='ReviewsList'),
+    path('reviews_detail/<pk>', views.ReviewsDetailView.as_view(), name='ReviewsDetail'),
+    path('reviews_delete/<pk>', views.ReviewsDeleteView.as_view(), name='ReviewsDelete'),
+    path('reviews_create/', views.ReviewsCreateView.as_view(), name='ReviewsCreate'),
+    path('reviews_update/<pk>', views.ReviewsUpdateView.as_view(), name='ReviewsUpdate'),
+    path('signup/', views.SignUpView.as_view(), name='SignUp'),
+    path('login/', views.AdminLoginView.as_view(), name='Login'),
+    path('logout/', views.AdminLogoutView.as_view(), name='Logout'),
+    path('profile/<pk>', views.ProfileView.as_view(), name='Profile'),
+    path('addavatar/', views.addAvatar, name='Avatar'),
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

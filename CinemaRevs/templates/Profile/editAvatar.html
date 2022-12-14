@@ -1,0 +1,14 @@
+{% extends 'Profile/editprofile.html' %}
+
+{% load static %}
+
+{% block codigoDinamico %}
+
+<div class="container" style="margin-top: 120px;">
+    <form action="" method="POST" enctype="multipart/form-data">{% csrf_token %}
+        {{avatar_form.as_p}}
+        <input type="submit" value="Save Avatar">
+    </form>
+</div>
+
+{% endblock %}}

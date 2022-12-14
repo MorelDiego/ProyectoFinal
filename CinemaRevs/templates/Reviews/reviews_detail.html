@@ -1,0 +1,25 @@
+{% extends 'index.html' %}
+
+{% load static %}
+
+{% block codigoDinamico %}
+<div class="d-flex flex-column align-items-center bg-gradient" style="margin-top: 50px;">
+    <div style="height: 400px;">
+        {% if reviews.image %}
+        <img src='{{reviews.image.url}}' alt="..." height="400">
+        {% else %}
+        <img src='' alt="IMG" class="img-fluid rounded-start" alt="...">
+        {% endif %}
+    </div>
+</div>
+<div class="container my-4">
+    <h1 class="text-center mb-5">{{reviews.title}}</h1>
+    <p class="text-break">{{reviews.body}}</p>
+</div>
+<div class="container my-5 d-flex justify-content-center">
+    <a href={% url 'ReviewsList' %}>
+        <button class="btn btn-primary rounded-pill">Back  to Reviews</button>
+    </a>
+</div>
+
+{% endblock codigoDinamico %}

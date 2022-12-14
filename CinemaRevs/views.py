@@ -1,68 +1,168 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from .forms import *
 from .models import *
+from django.views.generic import ListView
+from django.views.generic.detail import DetailView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import LoginView, LogoutView
+from django.urls import reverse_lazy
+
 # Create your views here.
 
 def index(request):
-    return render(request, 'index.html')
 
-def contacto_consulta(request):
+    # if request.user.is_authenticated():    
+
+    #     images = Avatar.objects.filter(user=request.user.id)
+
+    #     return render(request, 'index.html', {'url': images[0].image.url})
+
+    # else:
+        return render(request, 'index.html')
+
+def about(request):
+    return render(request, 'about.html')
+
+def contact(request):
+    
     if request.method == "POST":
-        formulario = CrearContacto(request.POST)
 
-        if formulario.is_valid():
+        contact_form = CreateContact(request.POST)
 
-            formulario_contacto = formulario.cleaned_data
+        if contact_form.is_valid():
 
-            contacto = Contacto(nombre=formulario_contacto["name"], email=formulario_contacto["email"], mensaje=formulario_contacto["message"])
+            formulario_contacto = contact_form.cleaned_data
+
+            contacto = Contact(name=formulario_contacto["name"], email=formulario_contacto["email"], message=formulario_contacto["message"])
 
             contacto.save()
 
             return render(request, "CinemaRevs/templates/index.html")
     else:
-        formulario = CrearContacto()
+        contact_form = CreateContact()
         
-    return render(request, "crearcontacto.html", {"formulario": formulario})
+    return render(request, "contact.html", {"contact_form": contact_form})
 
-def catalog(request):
+def reviews(request):
 
-    films = Films.objects.all()
+    review_list = Reviews.objects.all()
 
-    context = {'films': films}
+    context = {'reviews_list': review_list}
 
-    return render(request, 'catalog.html', context=context)
+    return render(request, 'reviews.html', context=context)
 
-def search_film(request):
-     if request.GET.get('titulo', False):
-        titulo = request.GET['titulo']
+def search(request):
+     if request.GET.get('film', False):
+        film = request.GET['film']
 
-        found = Films.objects.filter(titulo__icontains=titulo)
+        found = Reviews.objects.filter(film__icontains=film)
 
-        return render(request, "search_film.html", {"found":found})
+        return render(request, "search.html", {"found":found})
      else:
         respuesta = "No results found"
     
-     return render(request, 'search_film.html', {'respuesta': respuesta})
+     return render(request, 'search.html', {'respuesta': respuesta})
 
-def add_film(request):
+
+def editProfile(request):
+
+    user = request.user
 
     if request.method == 'POST':
+        editprofile_form = UserEditForm(request.POST)
 
-        addfilm = Add_Film(request.POST)
+        if editprofile_form.is_valid():
 
-        if addfilm.is_valid():
+            information = editprofile_form.cleaned_data
 
-            formulario_limpio = addfilm.cleaned_data
+            user.username = information['username']
+            user.email = information['email']
+            user.password1 = information['password']
+            user.password2 = information['password2']
+            user.save()
 
-            newfilm = Films(titulo=formulario_limpio['titulo'], año=formulario_limpio['año'], genero=formulario_limpio['genero'], duracion=formulario_limpio['duracion'], sinopsis=formulario_limpio['sinopsis'])
-
-            newfilm.save()
-
-            return render(request, 'addfilm.html')
+            return render(request, 'index.html')
 
     else:
-        addfilm = Add_Film()
-    return render(request, 'addfilm.html', {'addfilm': Add_Film})
 
+        editprofile_form = UserEditForm(initial={'username': user.username, 'email': user.email})
+
+    return render(request, 'Profile/editprofile.html', {'form': editprofile_form, 'user': user})
+
+def addAvatar(request):
+    if request.method == 'POST':
+
+        avatar_form = AvatarForm(request.POST, request.FILES)
+        
+        if avatar_form.is_valid():
+
+            currentUser = User.objects.get(username=request.user)
+            avatar = Avatar(user=currentUser, image=avatar_form.cleaned_data['image'])
+            avatar.save()
+            return render(request, 'index.html')
+
+    else:
+
+        avatar_form = AvatarForm()
+
+        return render(request, 'Profile/addAvatar.html', {'avatar_form': avatar_form})
+
+class ProfileView(DetailView):
+    model = User
+    template_name = 'Profile/profile.html'
+
+# class UserList(ListView):
+#     model = User
+#     template_name = 'userlist.html'
+
+class SignUpView(CreateView):
+    form_class = SignUpForm
+    success_url = reverse_lazy('Index')
+    template_name = 'register.html'
+
+class AdminLoginView(LoginView):
+    template_name = 'login.html'
+
+class AdminLogoutView(LogoutView):
+    template_name = 'logout.html'
+
+class ReviewsListView(ListView):
+    model = Reviews
+    template_name ='Reviews/reviews_list.html'
+
+class ReviewsDetailView(DetailView):
+    model = Reviews
+    template_name ='Reviews/reviews_detail.html'
+
+class ReviewsDeleteView(DeleteView):
+    model = Reviews
+    success_url = '/reviews_list'
+    template_name = 'Reviews/reviews_delete.html'
+
+class ReviewsCreateView(LoginRequiredMixin, CreateView):
+    model = Reviews
+    success_url = reverse_lazy('ReviewsList')
+    template_name = 'Reviews/reviews_create.html'
+    fields = ['title', 'body', 'film', 'image']
+
+    def form_valid(self, form):
+        obj = form.save(commit=False)
+        obj.author = self.request.user
+        obj.save()
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_success_url(self, **kwargs):         
+        if  kwargs != None:
+            return reverse_lazy('ReviewsList')
+        else:
+            return reverse_lazy('ReviewsList')
+
+class ReviewsUpdateView(UpdateView):
+    model = Reviews
+    success_url = '/reviews_list'
+    template_name = 'Reviews/reviews_update.html'
+    fields = ['title', 'body', 'film', 'image']
 

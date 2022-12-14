@@ -17,14 +17,19 @@ django\Scripts\activate
 - Instalar Django
 ```bash
 pip install django 
+pip install pillow
 ```
 - Ahora esta listo para correr
 ```bash
 cd ProyectoFinalMorel
 python manage.py runserver
 ```
-- Desde la url dada por consola podremos visualizar el proyecto, junto con sus funciones actuales
+- Desde la url dada por consola podremos visualizar el proyecto, junto con todas sus funciones:
 
-1. Add Film (agrega peliculas a la bbdd)
-2. Catalog (visualiza peliculas de la bbdd)
-3. Contact (envia datos del usuario junto con un mensaje)
+1. Boton home "CinemaRevs".
+2. Boton "Search" buscar peliculas por su titulo.
+3. Boton "Reviews" visualiza los Reviews creados, y en caso de estar logueado, brinda la opcion de crear, editar o eliminar posts propios (o todos en caso de admin status).
+4. Boton "Share a Review" nos lleva al formulario para crear posts.
+5. Boton "About" presenta descripcion sobre la creacion del blog.
+6. Boton "Contact us" visualiza formulario de contacto.
+7. Botones Login, Sign up, Logout. Formularios de creacion de usuarios, inicio de sesion, cierre de sesion, edicion de usuarios (avatares añadidos mediante django admin).

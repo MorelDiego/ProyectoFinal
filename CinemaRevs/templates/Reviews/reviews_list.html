@@ -1,0 +1,54 @@
+{% extends 'index.html' %}
+
+{% load static %}
+
+{% block codigoDinamico %}
+
+<div class="container d-flex align-items-center justify-content-between">
+    <h1 class="h1" style="margin-top: 100px;">Reviews</h1>
+    <button class="btn btn-primary" style="border-radius: 20px;">
+        <a href="{% url 'ReviewsCreate' %}" style="color: white; text-decoration:none">Add a review</a>
+    </button>
+</div>
+<div class="container mb-5">
+    <div class="mt-5 row d-flex justify-content-evenly" id="portfolio">
+        {% if object_list %}
+        {%  for review in object_list  %}
+                <div class="card mb-3 mx-2 col-md-4" style="max-width: 600px;">
+                    <div class="row g-0">
+                        {% if review.image %}
+                        <div class="col-md-4">
+                            <a href={% url 'ReviewsDetail' review.id %} style="color: black; text-decoration:none"><img src='{{review.image.url}}' class="img-fluid rounded-start" alt="..."></a>
+                        </div>
+                        {% else %}
+                        <div class="col-md-4">
+                            <a href={% url 'ReviewsDetail' review.id %} style="color: black; text-decoration:none"><img src='' alt="IMG" class="img-fluid rounded-start" alt="..."></a>
+                        </div>
+                        {% endif %}
+                        <div class="col-md-8">
+                                <a href={% url 'ReviewsDetail' review.id %} style="color: black; text-decoration:none">
+                                <div class="card-body">
+                                        <small class="text-muted">{{ review.film }}</small>
+                                        <h3 class="card-title">{{ review.title }}</h3>
+                                        <h6 class="card-subtitle">by: {{ review.author }}</h6>
+                                        <p class="card-text"><small class="text-muted">{{ review.date }}</small></p>
+                                </div>
+                                {% if user.is_authenticated and user == review.author or user.is_superuser %}
+                                <div class="container">
+                                    <a href={% url 'ReviewsUpdate' review.id %}><button class="btn btn-success btn-sm mb-2 rounded-pill" style="color: white;">Edit</button></a>
+                                    <a href={% url 'ReviewsDelete' review.id %}><button class="btn btn-secondary btn-sm mb-2 rounded-pill">Delete</button></a>
+                                </div>
+                                {% endif %}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+            </div>
+        <h3 class="my-5 text-muted">There are no reviews yet</h3>
+        {% endif %}
+    </div>
+
+
+{% endblock codigoDinamico %}
